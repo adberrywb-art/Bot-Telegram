@@ -1163,7 +1163,11 @@
             
             // Verificar si es un modelo GLB/GLTF o una imagen
             if (url && (url.endsWith('.glb') || url.endsWith('.gltf'))) {
+                const dracoLoader = new THREE.DRACOLoader();
+                dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
+                
                 const loader = new THREE.GLTFLoader();
+                loader.setDRACOLoader(dracoLoader);
                 loader.load(url, (gltf) => {
                     currentModel = gltf.scene;
                     
