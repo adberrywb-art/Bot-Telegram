@@ -1164,25 +1164,34 @@
             // Verificar si es un modelo GLB/GLTF o una imagen
             if (url && (url.endsWith('.glb') || url.endsWith('.gltf'))) {
                 const loader = new THREE.GLTFLoader();
-                loader.load(url, (gltf) => {
-                    currentModel = gltf.scene;
-                    
-                    const box = new THREE.Box3().setFromObject(currentModel);
-                    const center = box.getCenter(new THREE.Vector3());
-                    const size = box.getSize(new THREE.Vector3());
-                    
-                    const maxDim = Math.max(size.x, size.y, size.z);
-                    const scale = 2 / maxDim;
-                    currentModel.scale.setScalar(scale);
-                    currentModel.position.sub(center.multiplyScalar(scale));
-                    currentModel.position.y += 0.5;
-                    
-                    currentModel.traverse((child) => {
-                        if (child.isMesh) {
-                            child.castShadow = true;
-                            child.receiveShadow = true;
-                        }
-                    });
+
+loader.load(
+    url,
+    function (gltf) {
+
+        currentModel = gltf.scene;
+
+        const box = new THREE.Box3().setFromObject(currentModel);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 2 / maxDim;
+
+        currentModel.scale.setScalar(scale);
+        currentModel.position.sub(center.multiplyScalar(scale));
+
+        scene.add(currentModel);
+
+        document.getElementById("loading-3d").style.display = "none";
+    },
+
+    undefined,
+
+    function (error) {
+        console.error("Error cargando modelo 3D:", error);
+    }
+);
                     
                     scene.add(currentModel);
                     if (loaderEl) loaderEl.classList.add('hidden');
